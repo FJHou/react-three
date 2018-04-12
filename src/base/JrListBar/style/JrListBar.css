@@ -1,0 +1,9 @@
+.jr-list-bar-view {
+  box-sizing: border-box;
+  padding: 20px 40px;
+  margin: 8px auto 0;
+  width: 720px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #E9E9E9;
+}

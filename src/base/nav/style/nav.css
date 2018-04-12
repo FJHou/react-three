@@ -1,0 +1,37 @@
+.navWrapper {
+  height: 88px;
+  line-height: 88px;
+  background-color: #fff;
+}
+.navWrapper .navLayer {
+  width: 1000px;
+  height: 100%;
+  margin: auto;
+}
+.navWrapper .navLayer .logo {
+  float: left;
+  height: 100%;
+}
+.navWrapper .navLayer .logo img {
+  vertical-align: middle;
+}
+.navWrapper .navLayer .nav-list {
+  padding-left: 44px;
+  float: left;
+}
+.navWrapper .navLayer .nav-list li {
+  margin: 0 20px;
+  list-style: none;
+  float: left;
+  transition: color .3s ease;
+}
+.navWrapper .navLayer .nav-list li a {
+  text-decoration: none;
+  color: inherit;
+}
+.navWrapper .navLayer .nav-list li a.active {
+  color: #EA5413;
+}
+.navWrapper .navLayer .nav-list li:hover {
+  color: #EA5413;
+}
