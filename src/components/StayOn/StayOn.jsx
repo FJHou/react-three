@@ -24,6 +24,7 @@ class PlatForm extends Component {
     let model2 = this.state.cubeModel2
     let camera2 = model2.camera
     user2.on('rotating', (res) => {
+      
       /**
        * 成功！！！！！↓↓↓↓↓↓↓
        */
