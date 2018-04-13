@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/websocket/node_modules
 
 # testing
 /coverage
