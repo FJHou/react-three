@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CubeModel from './CreateCubeModel';
 import io from 'socket.io-client';
-let user2 = io('ws://192.168.0.25:4000/');
+let user2 = io('ws://localhost:4000/');
 
 class PlatForm extends Component {
   constructor () {
@@ -31,7 +31,7 @@ class PlatForm extends Component {
       camera2.position.x = res.x;
       camera2.position.y = res.y;
       camera2.position.z = res.z;
-      model2.init();
+      model2.update();
       /**
        * 成功！！！！！↑↑↑↑↑↑↑
        */     
