@@ -52,8 +52,6 @@ CubeModel.prototype.createCubeModel = function (data) {
     throw new Error('传入数据不能为空');
   }
 
-  // var  group = 
-
   data.forEach((item, index) => {
     var cubeWidth = item.width;
     var coordinates = item.coordinates;
@@ -93,6 +91,7 @@ CubeModel.prototype.initCamera = function () {
   this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
   this.setCameraConf();
 }
+
 CubeModel.prototype.setCameraConf = function () {
   // 设置相机位置以及观察位置
   this.camera.position.x = 200;
@@ -127,6 +126,7 @@ CubeModel.prototype.initControls = function () {
   this.controls.addEventListener( 'change', this.render.bind(this) );
   this.setControlsConf();
 }
+
 CubeModel.prototype.setControlsConf = function () {
   this.controls.enableDamping = true;
   // 旋转灵敏度

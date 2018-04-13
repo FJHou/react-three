@@ -27,11 +27,10 @@ class PlatForm extends Component {
       /**
        * 成功！！！！！↓↓↓↓↓↓↓
        */
-      camera2.position.x = res.x
-      camera2.position.y = res.y
-      camera2.position.z = res.z
-      model2.initControls()
-      model2.render()
+      camera2.position.x = res.x;
+      camera2.position.y = res.y;
+      camera2.position.z = res.z;
+      model2.init();
       /**
        * 成功！！！！！↑↑↑↑↑↑↑
        */     
@@ -110,15 +109,7 @@ class PlatForm extends Component {
     ];
     cubeModel.createCubeModel(info)
     cubeModel2.createCubeModel(info)
-    // this.setState ({
-    //   model: cubeModel
-    // })
-    // console.log(cubeModel)
-    // const socket = io('ws://localhost:4000/');
-    // cubeModel.controls.addEventListener('change', () => {
-    //   socket.emit('rotate', '呵呵');
-    // })
-    // this.socketLink()
+
     setTimeout(() => {
       this.socketLink()
     }, 20)
