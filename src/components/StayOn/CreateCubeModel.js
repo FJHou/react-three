@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import OrbitControls  from 'three-orbitcontrols';
 // import DragControls from 'three-dragcontrols';
-import io from 'socket.io-client';
-const socket = io('ws://localhost:4000/');
 
 function CubeModel(platForm) {
-  if (typeof platForm !== 'string') {
-    throw new Error('需传入元素节点id')
+  if (typeof platForm !== 'string' ) {
+    throw new Error('需传入元素节点id');
+  }
+  if (!document.getElementById(platForm)) {
+    throw new Error('未找到该节点');
   }
 
   this.camera = null;
@@ -19,11 +20,6 @@ function CubeModel(platForm) {
   // 存放立方体的组。
   this.group = new THREE.Group();
 
-  this.onWindowResize = function() {
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height );
-  }
   this.init();
 }
 
@@ -33,40 +29,71 @@ CubeModel.prototype.init = function () {
   this.initRenderer();
   this.initControls();
   this.render();
-  window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
+  window.addEventListener( 'resize', onWindowResize.call(this), false );
 }
+
 // 场景
 CubeModel.prototype.initScene = function () {
   this.scene = new THREE.Scene();
 }
+
 // 照相机
 CubeModel.prototype.initCamera = function () {
   var width = this.width, 
       height = this.height;
 
   this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
-  this.setCameraConf();
+  
+  // 设置相机位置以及观察位置
+  this.camera.position.x = 200;
+  this.camera.position.y = 50;
+  this.camera.position.z = 500;
+  this.camera.lookAt({
+    x: 0,
+    y: 0,
+    z: 0
+  })
 }
+
 // 渲染器
 CubeModel.prototype.initRenderer = function () {
   // antialias:true 开启抗锯齿
   this.renderer = new THREE.WebGLRenderer({antialias:true});
   this.platForm.appendChild( this.renderer.domElement );
-  this.setRendererConf()
+  // render配置
+  this.renderer.setClearColor(0xe8e8e8);
+  this.renderer.setPixelRatio( window.devicePixelRatio );
+  this.renderer.setSize( this.width, this.height );
 }
+
 // 初始化轨道控制
 CubeModel.prototype.initControls = function () {
   this.controls = new OrbitControls( this.camera, this.renderer.domElement );
   this.controlAddListener( 'change', this.render.bind(this) );
-  this.setControlsConf();
-} 
+  // console.log(this.controls)
+  // 旋转灵敏度//
+  this.controls.enableDamping = true;
+  this.controls.dampingFactor = 1;
+  // 禁止缩放
+  this.controls.enableZoom = false;
+}
+
+// 渲染场景
 CubeModel.prototype.render = function (e) {
   this.renderer.render( this.scene, this.camera ); 
 }
+
+// 更新视角，这是用来在接收到websocket数据时更新模型的状态。
 CubeModel.prototype.update = function() {
   this.initControls();
   this.render();
 }
+
+// 为controler添加监听事件
+CubeModel.prototype.controlAddListener = function (type, handler) {
+  this.controls.addEventListener(type, handler)
+}
+
 /**
  * 要创建的模型的数据，数组每一项是一个对象，用来描述
  * 每一项的颜色/坐标/长宽高。
@@ -123,37 +150,14 @@ CubeModel.prototype.createCubeModel = function (data) {
   this.render();
 }
 
-
-CubeModel.prototype.setCameraConf = function () {
-  // 设置相机位置以及观察位置
-  this.camera.position.x = 200;
-  this.camera.position.y = 50;
-  this.camera.position.z = 500;
-  this.camera.lookAt({
-    x: 0,
-    y: 0,
-    z: 0
-  })
+// 当窗口变化时，重置场景的以保证正确显示
+function onWindowResize() {
+  this.camera.aspect = this.width / this.height;
+  this.camera.updateProjectionMatrix();
+  this.renderer.setSize(this.width, this.height );
 }
 
-CubeModel.prototype.setRendererConf = function () {
-  this.renderer.setClearColor(0xe8e8e8);
-  this.renderer.setPixelRatio( window.devicePixelRatio );
-  this.renderer.setSize( this.width, this.height );
-}
-
-CubeModel.prototype.setControlsConf = function () {
-  this.controls.enableDamping = true;
-  // 旋转灵敏度
-  this.controls.dampingFactor = 1;
-  // 禁止缩放
-  this.controls.enableZoom = false;
-}
-
-CubeModel.prototype.controlAddListener = function (type, handler) {
-  this.controls.addEventListener(type, handler)
-}
-
+// 创建canvas
 function cusotmTexture (opts) {
   var bgColor = opts.bgColor || 'black',
       lineColor = opts.lineColor || 'green',
@@ -182,6 +186,7 @@ function cusotmTexture (opts) {
   return canvas
 }
 
+// 创建canvas皮肤
 function createtexture (bgColor, lineColor, width) {
   var cav = cusotmTexture({
     lineColor: lineColor, 

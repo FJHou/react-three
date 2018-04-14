@@ -5,6 +5,8 @@ import './index.css';
 import Nav from './base/nav/nav';
 import HomePage from './components/HomePage/HomePage';
 import PlatForm from './components/StayOn/StayOn';
+import CourseHasBeenOn from './components/CourseHasBeenOn/CourseHasBeenOn';
+
 // function HomePage () {
 //   return <h1>个人主页</h1>
 // }
@@ -13,9 +15,9 @@ import PlatForm from './components/StayOn/StayOn';
 //   return <h1>待上课程</h1>
 // }
 
-function CourseHasBeenOn () {
-  return <h1>已上课程</h1>
-}
+// function CourseHasBeenOn () {
+//   return <h1>已上课程</h1>
+// }
 
 function Test () {
   return <h1>水平测试</h1>

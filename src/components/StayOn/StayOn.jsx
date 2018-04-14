@@ -21,31 +21,31 @@ class PlatForm extends Component {
   }
 
   socketLink () {
-    let model2 = this.state.cubeModel2
-    let camera2 = model2.camera
-    socket.on('rotating', (res) => {
-      // console.log(res)
-      /**
-       * 成功！！！！！↓↓↓↓↓↓↓
-       */
-      // console.log(model2.controls);
-      camera2.position.set(res.x, res.y, res.z)
-      // model2.controls.update()
-      model2.update();
-      /**
-       * 成功！！！！！↑↑↑↑↑↑↑
-       */     
-    })
+    // let model2 = this.state.cubeModel2
+    // let camera2 = model2.camera
+    // socket.on('rotating', (res) => {
+    //   // console.log(res)
+    //   /**
+    //    * 成功！！！！！↓↓↓↓↓↓↓
+    //    */
+    //   // console.log(model2.controls);
+    //   camera2.position.set(res.x, res.y, res.z)
+    //   // model2.controls.update()
+    //   model2.update();
+    //   /**
+    //    * 成功！！！！！↑↑↑↑↑↑↑
+    //    */     
+    // })
   }
 
   createCube () {
     let cubeModel = new CubeModel('container');
-    let cubeModel2 = new CubeModel('container2');
-    this.setState({
-      model: cubeModel,
-      cubeModel2: cubeModel2
-    })
-    console.log(cubeModel2.controls)
+    // let cubeModel2 = new CubeModel('container2');
+    // this.setState({
+    //   model: cubeModel,
+    //   cubeModel2: cubeModel2
+    // })
+    // console.log(cubeModel2.controls)
 
     // cubeModel2.controlAddListener('change', () => {
     //   console.log(this)
@@ -103,13 +103,13 @@ class PlatForm extends Component {
       }
     ];
     cubeModel.createCubeModel(info)
-    cubeModel2.createCubeModel(info)
+    // cubeModel2.createCubeModel(info)
     cubeModel.controlAddListener('change', function(e) {
       socket.emit('rotate', cubeModel.camera.position);
     })
-    setTimeout(() => {
-      this.socketLink()
-    }, 20)
+    // setTimeout(() => {
+    //   this.socketLink()
+    // }, 20)
     
   }
 
