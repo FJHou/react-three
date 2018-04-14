@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CubeModel from './CreateCubeModel';
 import io from 'socket.io-client';
-let user2 = io('ws://localhost:4000/');
+const socket = io('ws://localhost:4000/');
 
 class PlatForm extends Component {
   constructor () {
@@ -23,30 +23,18 @@ class PlatForm extends Component {
   socketLink () {
     let model2 = this.state.cubeModel2
     let camera2 = model2.camera
-    user2.on('rotating', (res) => {
-      
+    socket.on('rotating', (res) => {
+      // console.log(res)
       /**
        * 成功！！！！！↓↓↓↓↓↓↓
        */
-      camera2.position.x = res.x;
-      camera2.position.y = res.y;
-      camera2.position.z = res.z;
+      // console.log(model2.controls);
+      camera2.position.set(res.x, res.y, res.z)
+      // model2.controls.update()
       model2.update();
       /**
        * 成功！！！！！↑↑↑↑↑↑↑
        */     
-
-      /**
-       * 离成功最近的一次 ↓↓↓↓↓↓↓
-       */
-      // console.log(model.group.rotation)
-      // model2.group.rotation.x = -res._x
-      // model2.group.rotation.y = -res._y
-      // model2.group.rotation.z = -res._z
-      // model2.render()
-      /**
-       * 离成功最近的一次 ↑↑↑↑↑↑↑
-       */
     })
   }
 
@@ -57,6 +45,12 @@ class PlatForm extends Component {
       model: cubeModel,
       cubeModel2: cubeModel2
     })
+    console.log(cubeModel2.controls)
+
+    // cubeModel2.controlAddListener('change', () => {
+    //   console.log(this)
+    //   socket.emit('rotate', this.camera.position);
+    // })
     // this.state.cubeModel2 = cubeModel2
     var info = [
       {
@@ -110,7 +104,9 @@ class PlatForm extends Component {
     ];
     cubeModel.createCubeModel(info)
     cubeModel2.createCubeModel(info)
-
+    cubeModel.controlAddListener('change', function(e) {
+      socket.emit('rotate', cubeModel.camera.position);
+    })
     setTimeout(() => {
       this.socketLink()
     }, 20)
@@ -118,17 +114,16 @@ class PlatForm extends Component {
   }
 
   saveCamera () {
-    let camera = this.state.model.getCameraClone()
-    this.setState({
-      camera: camera
-    })
-    console.log(camera)
+    // let camera = this.state.model.getCameraClone()
+    // this.setState({
+    //   camera: camera
+    // })
   }
 
   setCamera () {
-    let camera = this.state.camera;
-    this.state.model.setCameraClone(camera);
-    this.state.cubeModel2.setCameraClone(camera)
+    // let camera = this.state.camera;
+    // this.state.model.setCameraClone(camera);
+    // this.state.cubeModel2.setCameraClone(camera)
   }
 
   render () {

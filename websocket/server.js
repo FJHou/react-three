@@ -9,10 +9,8 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   console.log('a user connected');
   socket.on('rotate', function(msg){
-    // console.log(msg);
-    socket.broadcast.emit('rotating', msg)
+    socket.emit('rotating', msg)
   });
-  
 });
 
 http.listen(4000, function(){

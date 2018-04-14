@@ -12,9 +12,11 @@ function CubeModel(platForm) {
   this.camera = null;
   this.scence = null;
   this.renderer = null;
+  this.controls = null;
   this.platForm = document.getElementById(platForm);
   this.width = this.platForm.clientWidth;
   this.height = this.platForm.clientHeight;
+  // 存放立方体的组。
   this.group = new THREE.Group();
 
   this.onWindowResize = function() {
@@ -33,7 +35,34 @@ CubeModel.prototype.init = function () {
   this.render();
   window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
 }
+// 场景
+CubeModel.prototype.initScene = function () {
+  this.scene = new THREE.Scene();
+}
+// 照相机
+CubeModel.prototype.initCamera = function () {
+  var width = this.width, 
+      height = this.height;
 
+  this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+  this.setCameraConf();
+}
+// 渲染器
+CubeModel.prototype.initRenderer = function () {
+  // antialias:true 开启抗锯齿
+  this.renderer = new THREE.WebGLRenderer({antialias:true});
+  this.platForm.appendChild( this.renderer.domElement );
+  this.setRendererConf()
+}
+// 初始化轨道控制
+CubeModel.prototype.initControls = function () {
+  this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+  this.controlAddListener( 'change', this.render.bind(this) );
+  this.setControlsConf();
+} 
+CubeModel.prototype.render = function (e) {
+  this.renderer.render( this.scene, this.camera ); 
+}
 CubeModel.prototype.update = function() {
   this.initControls();
   this.render();
@@ -52,29 +81,39 @@ CubeModel.prototype.createCubeModel = function (data) {
     throw new Error('传入数据不能为空');
   }
 
+  var cubeWidth, 
+      coordinates, 
+      geometry,
+      material, 
+      cube, 
+      position;
+  // 循环创建cube
   data.forEach((item, index) => {
-    var cubeWidth = item.width;
-    var coordinates = item.coordinates;
-    var geometry = new THREE.BoxGeometry(cubeWidth, cubeWidth, cubeWidth);
-    var material = new THREE.MeshBasicMaterial({ 
+    cubeWidth = item.width;
+    coordinates = item.coordinates;
+    // 创建几何体
+    geometry = new THREE.BoxGeometry(cubeWidth, cubeWidth, cubeWidth);
+    // 创建纹理，纹理是用createtexture画的canvas
+    material = new THREE.MeshBasicMaterial({ 
       map: createtexture(item.bgColor, item.lineColor, item.width)
     });
-    var cube = new THREE.Mesh(geometry, material);
-    var position = cube.position;
-
+    // 创建网孔
+    cube = new THREE.Mesh(geometry, material);
+    position = cube.position;
+    // coordinates为传入的坐标系，是一个数组，参数为[x, y, z]坐标系
     position.x = coordinates[0];
     position.y = coordinates[1];
     position.z = coordinates[2];
 
     this.group.add(cube);
   })
-  // console.log(this.group)
+
   // 坐标修正，因为模型是根据中心点建立的，这就造成了模型建立后
   // 其中心点不在屏幕中心，下列x,y是修正值。
-  let x = Math.max.apply(Math, data.map((item, index) => {
+  var x = Math.max.apply(Math, data.map((item, index) => {
     return item.coordinates[0] / 2;
   }))
-  let y = Math.max.apply(Math, data.map((item) => {
+  var y = Math.max.apply(Math, data.map((item) => {
     return item.coordinates[1] / 2;
   }))
 
@@ -83,14 +122,7 @@ CubeModel.prototype.createCubeModel = function (data) {
   this.scene.add(this.group);
   this.render();
 }
-// 照相机
-CubeModel.prototype.initCamera = function () {
-  var width = this.width, 
-      height = this.height;
 
-  this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
-  this.setCameraConf();
-}
 
 CubeModel.prototype.setCameraConf = function () {
   // 设置相机位置以及观察位置
@@ -103,28 +135,11 @@ CubeModel.prototype.setCameraConf = function () {
     z: 0
   })
 }
-// 场景
-CubeModel.prototype.initScene = function () {
-  this.scene = new THREE.Scene();
-}
-// 渲染器
-CubeModel.prototype.initRenderer = function () {
-  // antialias:true 开启抗锯齿
-  this.renderer = new THREE.WebGLRenderer({antialias:true});
-  this.platForm.appendChild( this.renderer.domElement );
-  this.setRendererConf()
-}
 
 CubeModel.prototype.setRendererConf = function () {
   this.renderer.setClearColor(0xe8e8e8);
   this.renderer.setPixelRatio( window.devicePixelRatio );
   this.renderer.setSize( this.width, this.height );
-}
-// 设置轨道控制
-CubeModel.prototype.initControls = function () {
-  this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-  this.controls.addEventListener( 'change', this.render.bind(this) );
-  this.setControlsConf();
 }
 
 CubeModel.prototype.setControlsConf = function () {
@@ -135,29 +150,8 @@ CubeModel.prototype.setControlsConf = function () {
   this.controls.enableZoom = false;
 }
 
-CubeModel.prototype.render = function (e) {
-  if (e) {
-    // console.log(this.camera.position)
-    // let euler = this.camera.getWorldRotation();
-    // let quaternion = this.camera.getWorldQuaternion();
-    // console.log(this.camera.getWorldQuaternion())
-    // let matrix = this.camera.matrix.clone()
-    // console.log(this.camera.matrix.clone)
-    socket.emit('rotate', this.camera.position);
-  }
-  this.renderer.render( this.scene, this.camera ); 
-}
-
-CubeModel.prototype.getCameraClone = function () {
-  return this.camera
-}
-
-CubeModel.prototype.setCameraClone = function (camera) {
-  // console.log(camera);
-  this.camera = camera;
-  // this.initControls()
-  this.render()
-  // this.camera.applyMatrix(matrix);
+CubeModel.prototype.controlAddListener = function (type, handler) {
+  this.controls.addEventListener(type, handler)
 }
 
 function cusotmTexture (opts) {
