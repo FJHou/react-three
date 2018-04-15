@@ -113,11 +113,9 @@ class PlatForm extends Component {
     
   }
 
-  saveCamera () {
-    // let camera = this.state.model.getCameraClone()
-    // this.setState({
-    //   camera: camera
-    // })
+  studentControl () {
+    console.log('学生控制')
+    socket.emit('stcontrol');
   }
 
   setCamera () {
@@ -130,11 +128,11 @@ class PlatForm extends Component {
     return <div>
       <div id="container" className="container" style={{width: 1000, height: 500,
       margin:'auto'}}></div>
-      <div id="container2" className="container" style={{width: 1000, height: 500,
+      {/* <div id="container2" className="container" style={{width: 1000, height: 500,
       margin:'auto'}}>
 
-      </div>
-        <button onClick={() => { this.saveCamera() }}>保存相机</button>
+      </div> */}
+        <button onClick={() => { this.studentControl() }}>启用学生控制</button>
         <button onClick={() => { this.setCamera() }}>设置相机</button>
     </div>
   }

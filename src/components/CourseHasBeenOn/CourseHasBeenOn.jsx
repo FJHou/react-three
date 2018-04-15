@@ -71,12 +71,17 @@ class HasBeenOn extends Component {
        * 成功！！！！！↓↓↓↓↓↓↓
        */
       // console.log(model2.controls);
+      // console.log(res)
       camera2.position.set(res.x, res.y, res.z)
+      // camera2.updateMatrix();
       // model2.controls.update()
       cubeModel2.update();
       /**
        * 成功！！！！！↑↑↑↑↑↑↑
        */     
+    });
+    socket.on('stduentControl', () => {
+      new CubeModel('container2');
     })
   }
   render () {

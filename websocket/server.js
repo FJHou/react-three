@@ -11,7 +11,12 @@ io.on('connection', function(socket){
   socket.on('rotate', function(msg){
     socket.broadcast.emit('rotating', msg)
   });
+  socket.on('stcontrol', function(socket) {
+    console.log('a')
+    socket.broadcast.emit('stduentControl');
+  })
 });
+
 
 http.listen(4000, function(){
   console.log('listening on *:4000');
