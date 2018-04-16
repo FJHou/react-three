@@ -1,20 +1,22 @@
 import * as THREE from 'three';
 import OrbitControls  from 'three-orbitcontrols';
+import TWEEN from '@tweenjs/tween.js';
 // import DragControls from 'three-dragcontrols';
 
-function CubeModel(platForm) {
-  if (typeof platForm !== 'string' ) {
+function CubeModel(opts) {
+  if (typeof opts.platForm !== 'string' ) {
     throw new Error('需传入元素节点id');
   }
-  if (!document.getElementById(platForm)) {
+  if (!document.getElementById(opts.platForm)) {
     throw new Error('未找到该节点');
   }
-
+  this.opts = opts;
+  this.platForm = opts.platForm;
   this.camera = null;
-  this.scence = null;
+  this.scene = null;
   this.renderer = null;
   this.controls = null;
-  this.platForm = document.getElementById(platForm);
+  this.platForm = document.getElementById(opts.platForm);
   this.width = this.platForm.clientWidth;
   this.height = this.platForm.clientHeight;
   // 存放立方体的组。
@@ -28,10 +30,48 @@ CubeModel.prototype.init = function () {
   this.initCamera();
   this.initRenderer();
   this.initControls();
+  this.createCubeModel(this.opts.data);
+  this.animate();
+  this.initEvent();
   this.render();
-  window.addEventListener( 'resize', onWindowResize.call(this), false );
 }
+CubeModel.prototype.initEvent = function () {
+  // 是否能控制视角
+  console.log(this.controls)
+  if (this.opts.canControl) {
+    console.log(this.controls)
+    // alert(this.opts.canControl)
+    this.bindEvnet(this.controls, 'change', this.render.bind(this));
+  }
+  // 是否能点击元素进行动画
+  if (this.opts.selectEle) {
+    let mouse = new THREE.Vector2();
+    let raycaster = new THREE.Raycaster();
+    let renderOffset = this.renderer.domElement.getBoundingClientRect();
+    // console.log(renderOffset);
 
+    this.bindEvnet(this.platForm, 'mousedown', (e) => {
+      mouse.x = ( (e.clientX - renderOffset.x) / this.renderer.domElement.clientWidth ) * 2 - 1;
+      mouse.y = -(( (e.clientY - renderOffset.y) / this.renderer.domElement.clientHeight ) * 2 - 1);
+
+      raycaster.setFromCamera( mouse, this.camera );
+      let intersects = raycaster.intersectObjects(this.group.children);
+      
+      if (intersects.length > 0) {
+        console.log(intersects)
+        new TWEEN.Tween( intersects[ 0 ].object.position ).to( {
+          x: 10,
+          y: 180,
+          z: -120
+        }, 2000 )
+        .easing( TWEEN.Easing.Elastic.Out).start(); 
+      }
+
+    })
+    // 必须执行这个方法，否则无法适配窗口大小
+    window.addEventListener( 'resize', onWindowResize.call(this), false );
+  }
+}
 // 场景
 CubeModel.prototype.initScene = function () {
   this.scene = new THREE.Scene();
@@ -69,10 +109,12 @@ CubeModel.prototype.initRenderer = function () {
 // 初始化轨道控制
 CubeModel.prototype.initControls = function () {
   this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-  this.controlAddListener( 'change', this.render.bind(this) );
-  // console.log(this.controls)
-  // 旋转灵敏度//
+  
+  // 禁止右键平移物体
+  this.controls.enablePan = false;
+  
   this.controls.enableDamping = true;
+  // 旋转灵敏度
   this.controls.dampingFactor = 1;
   // 禁止缩放
   this.controls.enableZoom = false;
@@ -80,6 +122,7 @@ CubeModel.prototype.initControls = function () {
 
 // 渲染场景
 CubeModel.prototype.render = function (e) {
+  // console.log(1)
   this.renderer.render( this.scene, this.camera ); 
 }
 
@@ -89,9 +132,15 @@ CubeModel.prototype.update = function() {
   this.render();
 }
 
+CubeModel.prototype.animate = function(){
+  this.render();
+  requestAnimationFrame( this.animate.bind(this) );
+  TWEEN.update();
+}
+
 // 为controler添加监听事件
-CubeModel.prototype.controlAddListener = function (type, handler) {
-  this.controls.addEventListener(type, handler)
+CubeModel.prototype.bindEvnet = function (target, type, handler) {
+  target.addEventListener(type, handler)
 }
 
 /**
@@ -147,7 +196,6 @@ CubeModel.prototype.createCubeModel = function (data) {
   this.group.position.x = -x;
   this.group.position.y = -y;
   this.scene.add(this.group);
-  this.render();
 }
 
 // 当窗口变化时，重置场景的以保证正确显示
@@ -206,5 +254,13 @@ function isArray(arg) {
 
   return false;
 }
+
+// function animate() {
+  
+//   requestAnimationFrame( animate );
+//   TWEEN.update();
+//   // this.render();
+
+// }
 
 export default CubeModel;

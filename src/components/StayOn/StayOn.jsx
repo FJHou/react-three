@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CubeModel from './CreateCubeModel';
 import io from 'socket.io-client';
-const socket = io('ws://localhost:4000/');
+const socket = io('ws://192.168.0.60:4000/');
 
 class PlatForm extends Component {
   constructor () {
@@ -39,82 +39,81 @@ class PlatForm extends Component {
   }
 
   createCube () {
-    let cubeModel = new CubeModel('container');
-    // let cubeModel2 = new CubeModel('container2');
-    // this.setState({
-    //   model: cubeModel,
-    //   cubeModel2: cubeModel2
-    // })
-    // console.log(cubeModel2.controls)
-
-    // cubeModel2.controlAddListener('change', () => {
-    //   console.log(this)
-    //   socket.emit('rotate', this.camera.position);
-    // })
-    // this.state.cubeModel2 = cubeModel2
     var info = [
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 0, 0],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [100, 0, 0],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 0, -100],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 100, 0],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [100, 0, -100],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [100, 100, -100],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 100, -100],
-        width: 100
+        width: 100,
+        group: 1,
       },
       {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 200, -100],
-        width: 100          
+        width: 100,
+        group: 2,         
       }
-    ];
-    cubeModel.createCubeModel(info)
-    // cubeModel2.createCubeModel(info)
-    cubeModel.controlAddListener('change', function(e) {
+    ];    
+    let cubeModel = new CubeModel({
+      platForm: 'container',
+      data: info,
+      selectEle: true,
+      canControl: true
+    });
+
+    // cubeModel.createCubeModel(info)
+    cubeModel.bindEvnet(cubeModel.controls, 'change', function(e) {
       socket.emit('rotate', cubeModel.camera.position);
     })
-    // setTimeout(() => {
-    //   this.socketLink()
-    // }, 20)
-    
+    // cubeModel.eventListenerAdd(cubeModel.platForm, 'mousedown', (e) => {
+    //   console.log(e)
+    // })
   }
 
   studentControl () {
-    console.log('学生控制')
     socket.emit('stcontrol');
   }
 
@@ -126,8 +125,7 @@ class PlatForm extends Component {
 
   render () {
     return <div>
-      <div id="container" className="container" style={{width: 1000, height: 500,
-      margin:'auto'}}></div>
+      <div id="container" className="container" style={{width: '100%', height: 500, margin:'auto'}}></div>
       {/* <div id="container2" className="container" style={{width: 1000, height: 500,
       margin:'auto'}}>
 

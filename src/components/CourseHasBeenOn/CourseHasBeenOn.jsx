@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CubeModel from '../StayOn/CreateCubeModel';
 import io from 'socket.io-client';
-const socket = io('ws://localhost:4000/');
+const socket = io('ws://192.168.0.60:4000/');
 
 class HasBeenOn extends Component {
 
@@ -10,7 +10,6 @@ class HasBeenOn extends Component {
   }
 
   createCube () {
-    let cubeModel2 = new CubeModel('container2');
     var info = [
       {
         bgColor: '#DC143C',
@@ -58,11 +57,18 @@ class HasBeenOn extends Component {
         bgColor: '#DC143C',
         lineColor: '#000',
         coordinates: [0, 200, -100],
-        width: 100          
+        width: 100
       }
     ];
 
-    cubeModel2.createCubeModel(info);
+    let cubeModel2 = new CubeModel({
+      platForm: 'container2',
+      data: info,
+      selectEle: false,
+      canControl: false
+    });
+
+    // cubeModel2.createCubeModel(info);
     const camera2 = cubeModel2.camera;
 
     socket.on('rotating', (res) => {
@@ -81,7 +87,7 @@ class HasBeenOn extends Component {
        */     
     });
     socket.on('stduentControl', () => {
-      new CubeModel('container2');
+      // new CubeModel('container2');
     })
   }
   render () {
@@ -89,7 +95,7 @@ class HasBeenOn extends Component {
       <h1>已上课程</h1>
       <div id="container2" 
           className="container" 
-          style={{width: 1000, height: 500, margin:'auto'}}>
+          style={{width: '100%', height: 500, margin:'auto'}}>
       </div>
     </div>
   }
