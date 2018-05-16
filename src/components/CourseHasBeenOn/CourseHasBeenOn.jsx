@@ -7,8 +7,14 @@ class HasBeenOn extends Component {
 
   componentDidMount () {
     this.createCube(); 
+    console.log(Component)
+    console.log(this)
   }
 
+  componentDidUpdate () {
+    
+  }
+  
   createCube () {
     var info = [
       {
